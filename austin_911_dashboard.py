@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import geopandas as gpd
+#import geopandas as gpd
 import pickle
 from datetime import datetime
 
@@ -61,14 +61,8 @@ def load_data():
 
 @st.cache_data
 def load_austin_districts():
-    """Load Austin council district boundaries"""
-    try:
-        austin_gdf = gpd.read_file('https://data.austintexas.gov/resource/w3v2-cj58.geojson')
-        austin_gdf['council_district'] = pd.to_numeric(austin_gdf['district_number'])
-        return austin_gdf
-    except Exception as e:
-        st.error(f"Error loading Austin district boundaries: {e}")
-        return None
+    """Load Austin council district boundaries - simplified for deployment"""
+    return None
 
 def create_district_summary(df):
     """Create district-level summary statistics"""
@@ -89,50 +83,23 @@ def create_district_summary(df):
     return district_summary
 
 def create_choropleth_map(district_summary, austin_gdf):
-    """Create choropleth map of response times"""
-    if austin_gdf is None:
-        return None
-        
-    try:
-        # Merge district summary with geographic data
-        merged_data = austin_gdf.merge(district_summary, on='council_district', how='left')
-        
-        # Create choropleth map
-        fig = px.choropleth_mapbox(
-            merged_data,
-            geojson=merged_data.geometry,
-            locations=merged_data.index,
-            color='avg_response_min',
-            color_continuous_scale='Reds',
-            hover_name='council_district',
-            hover_data={
-                'avg_response_min': ':.1f',
-                'delay_percentage': ':.1f',
-                'total_calls': ':,',
-                'is_hotspot': True
-            },
-            labels={
-                'avg_response_min': 'Avg Response (min)',
-                'delay_percentage': 'Delay Rate (%)',
-                'total_calls': 'Total Calls',
-                'is_hotspot': 'Hotspot Status'
-            },
-            mapbox_style='open-street-map',
-            zoom=9.5,
-            center={'lat': 30.2672, 'lon': -97.7431},
-            title='Austin 911 Response Times by Council District'
-        )
-        
-        fig.update_layout(
-            height=600,
-            title_font_size=16,
-            font_size=12
-        )
-        
-        return fig
-    except Exception as e:
-        st.error(f"Error creating choropleth map: {e}")
-        return None
+    """Create bar chart instead of choropleth for deployment"""
+    fig = px.bar(
+        district_summary.sort_values('avg_response_min'),
+        x='council_district',
+        y='avg_response_min',
+        color='is_hotspot',
+        color_discrete_map={True: '#d62728', False: '#1f77b4'},
+        title='Average Response Time by Council District (Hotspots in Red)',
+        labels={
+            'council_district': 'Council District',
+            'avg_response_min': 'Average Response Time (minutes)',
+            'is_hotspot': 'Hotspot Status'
+        }
+    )
+    
+    fig.update_layout(height=600)
+    return fig
 
 def create_district_bar_chart(district_summary):
     """Create bar chart of response times by district"""
