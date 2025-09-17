@@ -212,11 +212,7 @@ def main():
         display_df = display_df.sort_values('avg_response_min', ascending=False)
         
         col1.dataframe(
-            display_df.style.format({
-                'avg_response_min': '{:.1f}',
-                'delay_percentage': '{:.1f}%',
-                'total_calls': '{:,}'
-            }).background_gradient(subset=['avg_response_min'], cmap='Reds'),
+            display_df,
             use_container_width=True
         )
         
@@ -272,11 +268,7 @@ def main():
         col1.subheader("Most Anomalous Districts")
         rankings_df = anomaly_summary['district_rankings'].copy()
         col1.dataframe(
-            rankings_df.style.format({
-                'avg_response': '{:.1f}',
-                'avg_delay_rate': '{:.1%}',
-                'anomalous_hours_count': '{:.0f}'
-            }).background_gradient(subset=['avg_delay_rate'], cmap='Reds'),
+            rankings_df,
             use_container_width=True
         )
         
@@ -306,10 +298,7 @@ def main():
             worst_hours_df = pd.DataFrame(details['worst_hours'])
             if not worst_hours_df.empty:
                 expander.dataframe(
-                    worst_hours_df.style.format({
-                        'avg_response_min': '{:.1f}',
-                        'delay_rate': '{:.1%}'
-                    }),
+                    worst_hours_df,
                     use_container_width=True
                 )
         
