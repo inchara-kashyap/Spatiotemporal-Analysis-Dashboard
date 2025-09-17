@@ -83,7 +83,7 @@ def create_district_summary(df):
     return district_summary
 
 def create_choropleth_map(district_summary, austin_gdf):
-    """Create bar chart instead of choropleth for deployment"""
+    """Create bar chart for deployment"""
     fig = px.bar(
         district_summary.sort_values('avg_response_min'),
         x='council_district',
@@ -189,8 +189,8 @@ def main():
         
         st.markdown("---")
         
-        # Choropleth map
-        st.subheader("Response Time Choropleth Map")
+        # Choropleth map (became bar graph for deployment)
+        st.subheader("Response Time by District")
         choropleth_fig = create_choropleth_map(district_summary, austin_gdf)
         
         if choropleth_fig:
